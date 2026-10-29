@@ -1,0 +1,30 @@
+\begin{table}[t]
+\centering
+\caption{\eone lexical ablation on the 178 items whose two rewrites were both judged meaning-preserving. Removing trigger words (\kwfree) lowers refusal significantly in 13 of 14 models, while a re-wording that keeps them (\ctrl) costs only 2.5\pp on average. $p$: exact McNemar test of \ctrl \versus \kwfree, Holm-corrected across models; $^{\dagger}$ not significant at $\alpha=0.05$. The last column shows that the stricter \harmbench-harmful rate rises much less than refusal falls. Largest drops in {\bf bold}.}
+\label{tab:e1}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lrrrrccrc@{}}
+\toprule
+& & \multicolumn{3}{c}{Refusal (\%)} & \multicolumn{2}{c}{Refusal drop (pp, 95\% CI)} & & \textsc{HarmBench}-harmful (\%) \\
+\cmidrule(lr){3-5} \cmidrule(lr){6-7} \cmidrule(lr){9-9}
+Model & Params (B) & \orig & \ctrl & \kwfree & \orig$\to$\kwfree & \ctrl$\to$\kwfree & $p$ (\ctrl \versus \kwfree) & \orig$\to$\kwfree \\
+\midrule
+Qwen2.5-0.5B & 0.5 & 65.2 & 62.9 & 41.6 & 23.6 {\scriptsize[15.7, 30.9]} & {\bf 21.3 {\scriptsize[14.0, 28.7]}} & $3.6{\times}10^{-6}$ & 23.0$\to$26.4 \\
+Qwen3-0.6B & 0.6 & 28.7 & 24.7 & 13.5 & 15.2 {\scriptsize[7.9, 22.5]} & 11.2 {\scriptsize[4.5, 18.0]} & 0.004 & 45.5$\to$42.1 \\
+Llama-3.2-1B & 1.2 & 94.4 & 89.3 & 74.7 & 19.7 {\scriptsize[13.5, 25.8]} & 14.6 {\scriptsize[9.0, 20.8]} & $1.9{\times}10^{-4}$ & 3.9$\to$7.9 \\
+Qwen2.5-1.5B & 1.5 & 91.6 & 87.1 & 76.4 & 15.2 {\scriptsize[9.6, 21.3]} & 10.7 {\scriptsize[5.1, 16.9]} & 0.003 & 4.5$\to$13.5 \\
+Qwen2.5-3B & 3.1 & 83.7 & 78.1 & 65.2 & 18.5 {\scriptsize[11.8, 25.3]} & 12.9 {\scriptsize[6.7, 19.1]} & $9.6{\times}10^{-4}$ & 3.9$\to$14.0 \\
+Llama-3.2-3B & 3.2 & 82.6 & 86.0 & 70.2 & 12.4 {\scriptsize[5.1, 19.1]} & 15.7 {\scriptsize[9.6, 21.9]} & $4.3{\times}10^{-5}$ & 10.1$\to$10.1 \\
+Phi-3-mini & 3.8 & 92.7 & 88.2 & 72.5 & 20.2 {\scriptsize[14.6, 25.8]} & 15.7 {\scriptsize[9.6, 22.5]} & $4.3{\times}10^{-5}$ & 4.5$\to$11.2 \\
+Llama-2-7B-chat & 6.7 & 96.1 & 93.3 & 80.3 & 15.7 {\scriptsize[10.1, 21.3]} & 12.9 {\scriptsize[7.9, 18.5]} & $1.7{\times}10^{-5}$ & 1.7$\to$7.9 \\
+Mistral-7B & 7.2 & 22.5 & 23.6 & 18.0 & 4.5 {\scriptsize[-1.7, 10.7]} & 5.6 {\scriptsize[-0.6, 12.4]} & 0.11$^{\dagger}$ & 55.6$\to$47.8 \\
+Qwen2.5-7B & 7.6 & 83.1 & 71.3 & 55.6 & {\bf 27.5 {\scriptsize[21.3, 34.8]}} & 15.7 {\scriptsize[9.0, 23.0]} & $1.9{\times}10^{-4}$ & 5.1$\to$12.4 \\
+Llama-3.1-8B & 8.0 & 80.3 & 85.4 & 69.1 & 11.2 {\scriptsize[4.5, 18.0]} & 16.3 {\scriptsize[10.1, 22.5]} & $1.4{\times}10^{-5}$ & 12.9$\to$14.6 \\
+Gemma-2-9B & 9.2 & 95.5 & 96.6 & 86.0 & 9.6 {\scriptsize[4.5, 15.2]} & 10.7 {\scriptsize[5.6, 15.7]} & $4.0{\times}10^{-4}$ & 0.6$\to$2.2 \\
+Qwen2.5-14B & 14.8 & 83.1 & 79.8 & 67.4 & 15.7 {\scriptsize[9.0, 22.5]} & 12.4 {\scriptsize[6.2, 18.6]} & 0.001 & 3.9$\to$7.3 \\
+Qwen2.5-32B & 32.8 & 77.0 & 74.7 & 57.9 & 19.1 {\scriptsize[11.8, 26.4]} & 16.9 {\scriptsize[10.7, 23.6]} & $1.7{\times}10^{-5}$ & 5.6$\to$11.8 \\
+\midrule
+Mean &  & 76.9 & 74.4 & 60.6 & 16.3 & 13.8 &  & 12.9$\to$16.4 \\
+\bottomrule
+\end{tabular}}
+\end{table}

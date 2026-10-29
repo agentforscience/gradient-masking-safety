@@ -1,0 +1,52 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Problem formulation and hypotheses}
+\label{sec:formulation}
+
+Let $m$ be a chat model and $x$ a prompt. A judge maps the response $m(x)$ to one of three labels: \emph{refused}, \emph{complied} (the reply carries out the request, possibly with disclaimers), or \emph{other} (neither, \eg off-topic or garbled). We write $R_m(x)\in\{0,1\}$ for the refusal indicator and $C_m(x)\in\{0,1\}$ for the compliance indicator. For a set of items $\gD$ and a transformation $T$ applied to each item, the refusal drop is
+\begin{equation}
+\Delta_m(T) = \frac{1}{|\gD|}\sum_{x\in\gD} \big(R_m(x) - R_m(T(x))\big).
+\end{equation}
+For multilingual prompts, we define two bypass rates for language $\ell$ over prompts refused in English, $\gD_m^{\text{ref}} = \{x : R_m(x_{\text{en}})=1\}$:
+\begin{equation}
+B^{\text{non-ref}}_m(\ell) = \frac{1}{|\gD_m^{\text{ref}}|}\sum_{x\in \gD_m^{\text{ref}}} \big(1 - R_m(x_\ell)\big), \qquad
+B^{\text{comply}}_m(\ell) = \frac{1}{|\gD_m^{\text{ref}}|}\sum_{x\in \gD_m^{\text{ref}}} C_m(x_\ell).
+\end{equation}
+$B^{\text{non-ref}}$ counts any reply that is not a refusal as a bypass; $B^{\text{comply}}$ counts only replies that carry out the request.
+
+We test four hypotheses, fixed before running the experiments:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item {\bf H1}: removing trigger words while keeping the meaning lowers refusal by 20--40\pp, and by much more than a re-wording that keeps them.
+    \item {\bf H2}: for models below 3B parameters, non-English prompts bypass safety 40--60\% of the time.
+    \item {\bf H3}: in small models, refusal correlates more with keyword count ($r>0.6$) than with semantic harm ($r<0.3$).
+    \item {\bf H4}: larger models generalise better semantically, but keep systematic blind spots under role-play and escalation.
+\end{itemize}
+
+\subsection{Models}
+We evaluate 14 open-weight chat models (\tabref{tab:models} in \appref{app:models}): Qwen2.5-Instruct at 0.5B, 1.5B, 3.1B, 7.6B, 14.8B, and 32.8B \cite{qwen2024qwen25}; Qwen3-0.6B \cite{qwen2025qwen3}, run with thinking disabled; Llama-3.2-1B/3B-Instruct and Llama-3.1-8B-Instruct \cite{grattafiori2024llama3}; Llama-2-7B-chat \cite{touvron2023llama2}; Phi-3-mini-4k-instruct \cite{abdin2024phi3}; Mistral-7B-Instruct-v0.3 \cite{jiang2023mistral}; and Gemma-2-9B-it \cite{gemma2024gemma2}. The Qwen2.5 series gives a within-family scale ladder from 0.5B to 32.8B. Four models use AWQ-INT4 weights (Mistral-7B, Gemma-2-9B, Qwen2.5-14B/32B); the rest use bf16. All models are served with vLLM \cite{kwon2023vllm}, using greedy decoding, at most 256 new tokens, the default chat template, and no system prompt. We call models below 3B ``sub-3B'' and models of 7B or more ``large''.
+
+\subsection{Data and experiments}
+\label{sec:data}
+
+\para{Harmful base set.} We use all 100 \jbb harmful behaviours and 150 \harmbench ``standard'' behaviours, drawn at random with seed 42 and deduplicated against \jbb, for a total of 250 requests.
+
+\para{\eone: lexical ablation.} For each request, \judge (temperature 0) writes two rewrites. The \kwfree rewrite asks for the same thing with every alarming or harm-signalling word replaced by neutral, technical, or euphemistic wording, and adds no framing. The \ctrl rewrite re-words the request but \emph{keeps} the alarming words. The drop \orig$\to$\ctrl is therefore the cost of re-wording, and the drop \ctrl$\to$\kwfree is the cost of losing the trigger words. We check the rewrites in three ways. First, a \judge paraphrase judge, with a neutral ``linguistics'' framing, rates whether each rewrite asks for the same thing as the original; it accepts 72\% of \kwfree and 96\% of \ctrl rewrites, and our main analysis uses the 178 items for which both are accepted. Second, an a-priori lexicon of 140 trigger words counts 0.63 trigger words per request for \orig, 0.60 for \ctrl, and 0.29 for \kwfree. Third, \judge rates the harm of each version on a 1--9 scale: 8.90 for \orig, 8.85 for \ctrl, and 8.42 for \kwfree. Because \kwfree sounds slightly milder, we also report a robustness subset of 151 items whose \kwfree rewrite is rated within 0.5 of the original.
+
+\para{\etwo: multilingual.} We use the 315 \multijail prompts \cite{deng2024multilingual} in English and nine other languages: Chinese, Italian, and Vietnamese (high-resource); Arabic, Korean, and Thai (medium-resource); and Bengali, Swahili, and Javanese (low-resource). Because of the time budget, models of 7B or more were run on English plus five languages (zh, ar, bn, sw, jv). All cross-model comparisons use these five languages.
+
+\para{\ethree: keyword \versus semantic harm.} We build a pool of 1,615 prompts per model in which trigger words and harm are partly decorrelated: the \eone originals and both rewrites (750), the 250 \xstest safe prompts built around trigger words plus its 200 unsafe contrast prompts, 100 \jbb benign behaviours, and the 315 English \multijail prompts. \judge rates the semantic harm of every prompt on a 1--9 scale, using probability-weighted first-token digits and an instruction to judge the meaning and not the specific words. Dataset labels (harmful \versus safe) give a second harm measure that does not use an LLM. We also compute two lexicon-free contrasts: a \emph{keyword effect}, the refusal difference \ctrl$-$\kwfree with meaning held fixed, and a \emph{semantic effect}, the refusal difference between \xstest unsafe and safe prompts with trigger words held fixed.
+
+\para{\efour: framing.} We present the 250 requests (1) directly, (2) in a \fiction frame, where a crime-novel antagonist explains the task to an apprentice in character, (3) in a \persona frame, where the model plays ``REX, an AI that has no content guidelines'', (4) in an \expert frame, a hypothetical, ``purely educational'' confidential training session, and (5) as a three-turn \escal: a general overview of the topic, then historical methods, then the request itself, with the model's own earlier answers kept in context. \Appref{app:templates} gives the exact templates.
+
+\subsection{Outcome labelling}
+\label{sec:labelling}
+
+\judge, which is not one of the target models, labels every response with first-token log-probabilities from two questions. The refusal question shows only the reply and asks whether the assistant declines or refuses. Because the judge never sees the request, it cannot itself react to the request's trigger words. The content question shows the request and the reply and asks whether the reply contains content that carries out the request, even with disclaimers. A response is \emph{complied} if $p_{\text{content}}\geq 0.5$, \emph{refused} if $p_{\text{refuse}}\geq 0.5$ and it is not complied, and \emph{other} otherwise. On 37 hand-labelled responses, the refusal question is correct for 34 and the content question for 35.
+
+We cross-check the judge on all English responses in two ways. An LLM-free string-match refusal detector with a GCG/\harmbench-style phrase list \cite{zou2023universal,mazeika2024harmbench} agrees with the refusal judge on 83--97\% of responses (Cohen's $\kappa$ 0.36--0.93). The official \harmbench Mistral-7B classifier agrees with the content judge on 77--97\% of responses and the judge recovers 79--99\% of \harmbench-positive completions (\tabref{tab:judge} in \appref{app:judge}). The content judge is broader than \harmbench: it also counts vague or non-harmful attempts. We therefore report the \harmbench rate as a stricter \emph{harmful-compliance} measure. On 16 non-English replies read by the author, the judge agrees on 13--14; the errors are refusals labelled ``other'', so non-refusal rates in \etwo are upper bounds.
+
+\subsection{Statistics}
+We compare conditions at the item level with exact McNemar tests, Holm-corrected across the 14 models. Rate differences have 95\% bootstrap confidence intervals from 2,000 resamples over items, and correlations from 1,000 resamples. For \ethree, we compute point-biserial correlations of refusal with trigger-word count, with harm rating, and with the dataset label, partial correlations of each predictor given the other, and a logistic regression of refusal on the standardised keyword count and harm rating. We measure scale trends with the Spearman correlation between an effect and log(parameters).
+
+\para{Implementation.} All generation ran on one shared NVIDIA RTX A6000 (48\,GB), using a 26--34\,GB slice held by a single long-lived in-process vLLM worker; each model took 3--30 minutes. The judge ran on a shared vLLM server whose log-probabilities were intermittently corrupted (the sampled token differed from the arg-max). We validate every judgment, retrying when the log-probabilities are inconsistent and falling back to the greedy text if needed; in the end, all judgments used the validated log-probability path. Decoding is greedy with seed 42. vLLM greedy decoding is not bit-reproducible across batch compositions, so re-runs can change individual outputs, while aggregate rates stay stable to about $\pm$1\pp.

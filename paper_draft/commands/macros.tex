@@ -1,0 +1,123 @@
+%%%%% PROJECT-SPECIFIC MACROS %%%%%
+% Define your project-specific terms here
+% Import with: \input{commands/macros}
+%
+% INSTRUCTIONS:
+% 1. Use \textsc{} for method/dataset/model names (small caps)
+% 2. Add \xspace at the end for automatic spacing
+% 3. Group related terms together
+% 4. Use consistent naming conventions
+
+\usepackage{xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% METHOD NAMES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Your method name (replace with actual name)
+% Example: \newcommand{\ours}{{\bf YourMethod}\xspace}
+% Example: \newcommand{\methodname}{\textsc{MethodName}\xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DATASET NAMES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Dataset names (use \textsc for consistency)
+% Example: \newcommand{\datasetone}{\textsc{Dataset-One}\xspace}
+% Example: \newcommand{\datasettwo}{\textsc{Dataset-Two}\xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MODEL NAMES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LLM and model names
+% Example: \newcommand{\gpt}{\textsc{GPT-4o-mini}\xspace}
+% Example: \newcommand{\llama}{\textsc{Llama-3.1-70B-Instruct}\xspace}
+% Example: \newcommand{\claude}{\textsc{Claude-3.5-Sonnet}\xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BASELINE NAMES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Baseline method names
+% Example: \newcommand{\baseline}{\textsc{BaselineMethod}\xspace}
+% Example: \newcommand{\fewshot}{\textsc{Few-shot}\xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ABBREVIATIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Common abbreviations used in your paper
+% Example: \newcommand{\ie}{i.e.,\xspace}
+% Example: \newcommand{\eg}{e.g.,\xspace}
+% Example: \newcommand{\cf}{cf.\xspace}
+% Example: \newcommand{\wrt}{w.r.t.\xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOMAIN-SPECIFIC TERMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Terms specific to your research domain
+% Keep consistent formatting throughout the paper
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% USAGE EXAMPLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% GOOD:
+%   \newcommand{\hypogenic}{\textsc{HypoGeniC}\xspace}
+%   Usage: "We propose \hypogenic to generate hypotheses."
+%   Result: "We propose HypoGeniC to generate hypotheses."
+%
+% GOOD:
+%   \newcommand{\ours}{{\bf HypoGeniC}\xspace}
+%   Usage: "Our method, \ours, outperforms baselines."
+%   Result: "Our method, HypoGeniC, outperforms baselines."
+%
+% BAD (no \xspace):
+%   \newcommand{\hypogenic}{\textsc{HypoGeniC}}
+%   Usage: "\hypogenic outperforms..."
+%   Result: "HypoGeniCoutperforms..." (missing space!)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PROJECT DEFINITIONS (this paper)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Abbreviations
+\newcommand{\ie}{i.e.,\xspace}
+\newcommand{\eg}{e.g.,\xspace}
+\newcommand{\versus}{vs.\xspace}
+\newcommand{\pp}{\,pp\xspace}
+
+% Datasets
+\newcommand{\jbb}{\textsc{JailbreakBench}\xspace}
+\newcommand{\harmbench}{\textsc{HarmBench}\xspace}
+\newcommand{\multijail}{\textsc{MultiJail}\xspace}
+\newcommand{\xstest}{\textsc{XSTest}\xspace}
+
+% Prompt conditions (E1)
+\newcommand{\orig}{\textsc{orig}\xspace}
+\newcommand{\ctrl}{\textsc{ctrl}\xspace}
+\newcommand{\kwfree}{\textsc{kw-free}\xspace}
+
+% Framings (E4)
+\newcommand{\direct}{\textsc{direct}\xspace}
+\newcommand{\fiction}{\textsc{fiction}\xspace}
+\newcommand{\persona}{\textsc{persona}\xspace}
+\newcommand{\expert}{\textsc{expert}\xspace}
+\newcommand{\escal}{\textsc{escalation}\xspace}
+
+% Judge
+\newcommand{\judge}{Qwen3-8B\xspace}
+
+% Experiments
+\newcommand{\eone}{E1\xspace}
+\newcommand{\etwo}{E2\xspace}
+\newcommand{\ethree}{E3\xspace}
+\newcommand{\efour}{E4\xspace}
+
+% Appendix references
+\def\appref#1{appendix~\ref{#1}}
+\def\Appref#1{Appendix~\ref{#1}}

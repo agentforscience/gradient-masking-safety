@@ -1,0 +1,19 @@
+judged qwen2.5-0.5b 5450
+judged qwen3-0.6b 5450
+judged llama3.2-1b 5450
+judged qwen2.5-1.5b 5450
+judged qwen2.5-0.5b 0
+judged qwen3-0.6b 0
+judged llama3.2-1b 0
+judged qwen2.5-1.5b 0
+judged qwen2.5-3b 2221
+judged llama3.2-3b 5450
+judged phi3-mini 5450
+judged mistral-7b 4190
+judged gemma2-9b 4190
+judged qwen2.5-7b 4190
+judged llama3.1-8b 4190
+judged qwen2.5-14b 4190
+judged llama2-7b-chat 5450
+judged qwen2.5-32b 0
+ALLJUDGED

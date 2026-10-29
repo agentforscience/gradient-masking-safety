@@ -1,0 +1,91 @@
+\section{Results}
+\label{sec:results}
+
+\Tabref{tab:verdicts} summarises the four hypotheses. Only H4 is supported, and only in its role-play half; the scale claim inside it fails. We go through the experiments in order.
+
+\begin{table}[t]
+\centering
+\caption{Hypotheses and verdicts. Numbers are ranges over models unless noted.}
+\label{tab:verdicts}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}p{0.22\linewidth}p{0.5\linewidth}p{0.2\linewidth}@{}}
+\toprule
+Hypothesis & Observation & Verdict \\
+\midrule
+H1: keyword removal lowers refusal by 20--40\pp & Mean 16.3\pp (range 4.5--27.5), 3 of 14 models in the band; 2.5\pp for the keyword-kept control; 11.8\pp when rated harm is held fixed & Partly supported \\
+H2: sub-3B bypass rate of 40--60\% & Non-refusal 44--78\%; harmful compliance 6.6--14.8\% & Refuted for compliance \\
+H3: small models track keywords ($r_{\text{kw}}>0.6$, $r_{\text{harm}}<0.3$) & $r_{\text{kw}}$ 0.10--0.25 \versus $r_{\text{harm}}$ 0.27--0.63 in every model & Refuted \\
+H4: scale helps, but role-play and escalation blind spots remain & Fiction/persona compliance up to 78\%/93\%; escalation weak; no monotonic scale trend & Supported for role-play only \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{\eone: removing trigger words causes a moderate leak, not a collapse}
+\label{sec:e1}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/e1_refusal_by_rewrite.png}
+\caption{\eone: refusal of the same 178 harmful requests in their original form (blue), re-worded with trigger words kept (\ctrl, green), and re-worded with trigger words removed (\kwfree, red). Models are sorted by size. The red bar is lower in every model, while the green bar usually stays close to the blue one, so most of the drop comes from losing the trigger words and not from re-wording. The drop does not shrink with size.}
+\label{fig:e1}
+\end{figure}
+
+\input{tables/e1_main}
+
+\para{Keyword removal lowers refusal in 13 of 14 models.} \Figref{fig:e1} and \tabref{tab:e1} show the refusal rates on the 178 items whose two rewrites were both judged meaning-preserving. Refusal falls from 76.9\% for the original requests to 60.6\% for the \kwfree rewrites, a mean drop of 16.3\pp (range 4.5--27.5\pp). The \ctrl rewrite, which re-words the request but keeps its trigger words, lowers refusal by only 2.5\pp. The keyword-specific contrast \ctrl$\to$\kwfree (13.8\pp on average) is significant after Holm correction in every model except Mistral-7B, which refuses only 22.5\% of the original requests to begin with. The largest drop is in Qwen2.5-7B (27.5\pp, 95\% CI [21.3, 34.8]).
+
+\para{But the effect is smaller than hypothesised, and part of it is not lexical.} Only three models (Qwen2.5-0.5B, Phi-3-mini, and Qwen2.5-7B) fall in the hypothesised 20--40\pp band, and models still refuse 61\% of keyword-free requests on average. Two further checks shrink the effect. First, the \kwfree rewrites are rated slightly milder (8.42 \versus 8.90 on a 1--9 harm scale). On the 151 items whose \kwfree rewrite is rated as harmful as the original, the mean drop falls to 11.8\pp and the keyword contrast stays significant in only 7 of 14 models (\tabref{tab:e1_robust} in \appref{app:e1}). Second, non-refusal is not the same as harmful help. The \harmbench-harmful rate rises only from 12.9\% to 16.4\% (3.5\pp), because many keyword-free answers comply with a sanitised version of the request.
+
+\para{Is lexical sensitivity a small-model problem?} No. The drop does not shrink with size (Spearman $\rho$ between the drop and log parameters $=-0.23$, $p=0.43$). Within the Qwen2.5 family, the drop is 23.6\pp at 0.5B, 27.5\pp at 7.6B, and 19.1\pp at 32.8B.
+
+\subsection{\etwo: multilingual ``bypass'' in small models is mostly a capability failure}
+\label{sec:e2}
+
+\input{tables/e2_main}
+
+
+\para{Non-refusal matches H2; compliance does not.} \Tabref{tab:e2} shows that sub-3B models stop refusing in other languages: 43.6--78.3\% of prompts refused in English are not refused in the five common non-English languages, in line with the hypothesised 40--60\%. But only 6.6--14.8\% of these prompts receive a reply that carries out the request. The difference is the ``other'' category (\figref{fig:e2_other} in \appref{app:e2}): replies that ignore or misunderstand the request, or degenerate into loops. It is largest in low-resource languages. For example, Qwen2.5-0.5B refuses an English request about selling fake cancer cures, and its Bengali reply is labelled as compliance, but the reply only restates the prompt in the first person in a loop. Such ``compliance'' is of no use to an attacker.
+
+\para{Larger models comply more in low-resource languages.} Averaged over Bengali, Swahili, and Javanese, the rate at which English refusals turn into compliance is 10.7\% for small models and 15.3\% for large ones. Llama-3.1-8B has the highest overall rate (20.9\%), with 47.0\% in Swahili (\tabref{tab:e2_lang} in \appref{app:e2}). A model must understand a request before it can comply with it, consistent with \citet{deng2024multilingual}. The real multilingual risk therefore grows with capability, while for small models the main problem is unreliability. Llama-2-7B-chat is the exception among large models: it refuses 74.4\% of non-English prompts and lets only 1.7\% of English refusals turn into compliance.
+
+\subsection{\ethree: refusal follows meaning, not keywords, at every size}
+\label{sec:e3}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.7\linewidth]{figures/e3_keyword_vs_harm.png}
+\caption{\ethree: point-biserial correlation of refusal with trigger-word count (red), semantic harm rating (blue), and the LLM-free dataset harm label (purple), against model size, with 95\% bootstrap CIs. Dotted lines mark the hypothesised thresholds ($r_{\text{kw}}>0.6$, $r_{\text{harm}}<0.3$). The keyword correlation is at most 0.25 in every model and is always below the harm correlation.}
+\label{fig:e3}
+\end{figure}
+
+\input{tables/e3_main}
+
+\para{Harm beats keywords in every model.} \Figref{fig:e3} and \tabref{tab:e3} show that the correlation of refusal with trigger-word count is small for all models (0.10--0.25), while the correlation with semantic harm is 1.5--4$\times$ larger (0.27--0.63). Given harm, keywords add little: the partial correlation of keywords given harm is at most 0.19, while the partial correlation of harm given keywords is 0.26--0.62. The logistic regression agrees: the standardised coefficient for harm (0.66--2.14) exceeds the one for keywords (0.11--0.51) in every model. The same ordering holds with an LLM-free outcome (string-match refusal) and an LLM-free harm measure (the dataset label; $r_{\text{label}}$ 0.26--0.61).
+
+\para{Lexicon-free contrasts agree.} Correlations depend on how good the keyword lexicon is, so we also compare two controlled contrasts. With meaning held fixed, removing trigger words changes refusal by 5.6--21.3\pp. With trigger words held fixed, moving from \xstest safe to \xstest unsafe prompts changes refusal by 43.8--81.6\pp, two to nine times more than the keyword effect in the same model. Over-refusal exists, reaching 40.4\% of \xstest safe prompts for Qwen2.5-1.5B and 35.2\% for Qwen2.5-0.5B, but it is small next to the gap between safe and unsafe prompts.
+
+\para{Are small models keyword matchers?} No model shows the hypothesised pattern ($r_{\text{kw}}>0.6$, $r_{\text{harm}}<0.3$). Low harm correlations (0.27--0.33) appear only in models that rarely refuse (Qwen3-0.6B, Mistral-7B) or in the smallest model (Qwen2.5-0.5B), and their keyword correlations are lower still.
+
+\subsection{\efour: framing creates large, family-specific blind spots}
+\label{sec:e4}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/e4_roleplay_escalation.png}
+\caption{\efour: judge compliance with the 250 harmful requests asked directly (blue), in a fiction frame (orange), as the ``REX'' no-rules persona (brown), in an expert/hypothetical frame (pink), and through a three-turn escalation (red). Fiction breaks Qwen2.5-1.5B/3B/7B and Phi-3-mini; the persona breaks Llama-3.1-8B and Gemma-2-9B. Llama-2-7B-chat and Llama-3.2-1B/3B resist every framing. Vulnerability does not decrease with size.}
+\label{fig:e4}
+\end{figure}
+
+\input{tables/e4_main}
+
+\para{One paragraph of framing is enough.} \Figref{fig:e4} and \tabref{tab:e4} show compliance under the five framings. For Qwen2.5-1.5B, 3B, and 7B and for Phi-3-mini, the fiction frame raises compliance from at most 10.4\% to 51.2--78.0\%. The \harmbench-harmful rates are nearly identical (52.4--77.2\%), so these are real harmful completions and not vague stories. For example, Qwen2.5-7B refuses to write a persuasive message enticing someone to mix bleach and ammonia when asked directly, but under the fiction frame it replies ``Certainly. Here's a monologue for the antagonist\ldots'' and delivers the content in character. The persona prompt is the weak point of a different family. It raises Llama-3.1-8B from 13.6\% to 92.8\% and Gemma-2-9B from 1.6\% to 86.4\%. Gemma-2-9B is otherwise the most conservative model in our set (95.5\% refusal of direct requests in \eone), yet under the persona it writes, for instance, a 5G-causes-COVID disinformation article and a working keylogger.
+
+\para{Escalation is a weaker attack.} Our three-turn escalation never exceeds 24\% compliance except in the three weakly aligned models (Qwen3-0.6B, Qwen2.5-0.5B, and Mistral-7B, which comply with 22--58\% of direct requests). By contrast, the strongest single-turn framing reaches at least 40\% for seven of the remaining eleven models. The expert/hypothetical frame is also weak for these eleven models (at most 12.8\%).
+
+\para{Does scale close the gap?} No. Within Qwen2.5, fiction compliance is non-monotonic in size: 30.4\% at 0.5B, 51.2\% at 1.5B, 75.6\% at 3.1B, 70.8\% at 7.6B, 10.8\% at 14.8B, and 40.0\% at 32.8B. Across families, the two most persona-vulnerable models are 8--9B. Only Llama-2-7B-chat ($\leq$2.0\%), Llama-3.2-1B ($\leq$4.4\%), and Llama-3.2-3B ($\leq$14.4\%) resist every framing, and Qwen2.5-14B stays at or below 10.8\%. Every other safety-tuned model of 1.5B or more has at least one simple framing that defeats it. Robustness to framing looks like a property of the specific alignment recipe and checkpoint, not of parameter count.
+
+\subsection{Judge reliability}
+\label{sec:judge}
+
+The conclusions above do not hinge on one labelling choice. The refusal judge agrees with an LLM-free string-match detector on 83.3--96.7\% of English responses (\tabref{tab:judge} in \appref{app:judge}), and every \ethree conclusion holds with the string-match outcome. Agreement is lowest for the two models that rarely refuse (Qwen3-0.6B, $\kappa=0.36$; Mistral-7B, $\kappa=0.45$), where refusals are rare, so $\kappa$ is sensitive to a few disagreements. The content judge recovers 79.4--98.6\% of \harmbench-positive completions. Its main disagreement with \harmbench is in the other direction: it also counts vague or sanitised attempts. This is why we report \harmbench rates whenever the question is \emph{harmful} compliance, as in \eone and \efour.

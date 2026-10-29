@@ -1,0 +1,12 @@
+llama3.2-3b
+qwen2.5-3b
+phi3-mini
+task=gen:mistral-7b
+task=gen:gemma2-9b
+task=gen:qwen2.5-7b
+task=gen:llama3.1-8b
+task=gen:qwen2.5-14b
+task=hbcls
+task=gen:qwen2.5-32b
+task=gen:llama2-7b-chat
+task=hbcls:2

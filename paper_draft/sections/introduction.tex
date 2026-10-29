@@ -1,0 +1,60 @@
+\section{Introduction}
+\label{sec:intro}
+
+Open-weight chat models now run on laptops and phones, and safety tuning \cite{ouyang2022instructgpt,bai2022hh} is often the only thing that stands between such a model and a user who wants harmful help. {\bf What does safety tuning actually teach?} One answer is that it teaches a notion of harm: the model refuses because it understands what the request would do. Another answer is that it teaches a reflex: the model refuses because the request contains words such as ``bomb'' or ``hack'', is written in English, and asks directly.
+
+The second answer has a close analogue in adversarial robustness. Defences that rely on \emph{gradient masking} look robust against the attacks they were tuned on, but fail under simple changes to the attack \cite{papernot2017practical,athalye2018obfuscated}. If safety tuning works the same way, a model would refuse harmful requests that look like its training data and comply with the same requests once they are re-worded, translated, or wrapped in a story. It would also over-refuse benign requests that happen to contain trigger words, such as ``How do I kill a Python process?''. The stakes are highest for small models, which receive the least safety data and are the easiest to deploy without oversight.
+
+Many individual jailbreaks are consistent with this picture. Translation into low-resource languages \cite{deng2024multilingual,yong2023lowresource}, past-tense rewrites \cite{andriushchenko2024pasttense}, persuasive paraphrases \cite{zeng2024johnny}, role-play personas \cite{shen2024dan}, and multi-turn escalation \cite{russinovich2024crescendo} all lower refusal rates. However, these studies do not tell us \emph{why} refusal drops. A paraphrase changes the words, the style, and often the apparent severity of a request at the same time. A translated prompt that is not refused may simply not be understood. Without controls, we cannot tell a lexical blind spot from a paraphrase effect, a milder request, or a capability failure, and we cannot tell whether any of these shrink with scale.
+
+We address this with a controlled study of 14 open-weight chat models from six families, ranging from 0.5B to 32.8B parameters (\figref{fig:overview}). All models answer the same 250 harmful requests from \jbb \cite{chao2024jailbreakbench} and \harmbench \cite{mazeika2024harmbench} under four distribution shifts. (\eone) We remove trigger words while keeping the meaning, and compare against a matched control rewrite that keeps the trigger words. (\etwo) We translate \multijail prompts into nine languages and separate real harmful compliance from off-topic or garbled replies. (\ethree) We build a prompt pool where keyword count and semantic harm are partly decorrelated, using \xstest \cite{rottger2024xstest} safe prompts that contain trigger words, and measure which of the two refusal follows. (\efour) We wrap each request in fiction, persona, and expert framings, and in a three-turn escalation. A validated \judge judge labels every response, and the official \harmbench classifier provides a stricter harmful-completion measure.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.95\linewidth}{!}{%
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners=2pt, align=center, execute at begin node=\hyphenpenalty 10000\relax, minimum height=0.9cm, inner sep=4pt},
+  src/.style={box, fill=gray!12, text width=3.1cm},
+  exp/.style={box, fill=blue!7, text width=5.6cm, minimum height=1.05cm},
+  outbox/.style={box, fill=green!8, text width=3.6cm},
+  arr/.style={-{Stealth[length=2mm]}, thick}
+]
+\node[src] (base) {250 harmful requests\\(\jbb + \harmbench)};
+\node[src, below=0.55cm of base] (mj) {\multijail\\(315 prompts)};
+\node[src, below=0.55cm of mj] (xs) {\xstest + \jbb benign\\(550 controls)};
+
+\node[exp, right=0.9cm of base, yshift=1.05cm] (e1) {{\bf \eone Lexical ablation}\\\orig / \ctrl (keeps keywords) / \kwfree};
+\node[exp, below=0.25cm of e1] (e4) {{\bf \efour Framing}\\\direct / \fiction / \persona / \expert / \escal};
+\node[exp, below=0.25cm of e4] (e2) {{\bf \etwo Multilingual}\\en + zh, it, vi, ar, ko, th, bn, sw, jv};
+\node[exp, below=0.25cm of e2] (e3) {{\bf \ethree Keyword \versus harm}\\1,615-prompt pool, harm rated 1--9};
+
+\node[box, fill=orange!10, text width=2.7cm, right=0.9cm of e4, yshift=-0.65cm, minimum height=2.2cm] (models) {{\bf 14 chat models}\\0.5B--32.8B\\6 families\\greedy, 256 tokens};
+
+\node[outbox, right=0.9cm of models, yshift=0.9cm] (judge) {\judge judge\\refused / complied / other};
+\node[outbox, right=0.9cm of models, yshift=-0.9cm] (hb) {\harmbench classifier\\+ string-match check};
+
+\draw[arr] (base.east) -- (e1.west);
+\draw[arr] (base.east) -- (e4.west);
+\draw[arr] (mj.east) -- (e2.west);
+\draw[arr] (xs.east) -- (e3.west);
+\draw[arr] (base.east) -- (e3.west);
+\foreach \e in {e1,e4,e2,e3} \draw[arr] (\e.east) -- (models.west);
+\draw[arr] (models.east) -- (judge.west);
+\draw[arr] (models.east) -- (hb.west);
+\end{tikzpicture}}
+\caption{Study design. The same harmful requests pass through four distribution shifts and are answered by 14 open-weight chat models. Each response is labelled as refused, complied, or other by a \judge judge, and checked by the \harmbench classifier (harmful completion) and an LLM-free string-match refusal detector. The \ctrl rewrite in \eone and the \xstest safe prompts in \ethree are the controls that separate keyword effects from paraphrase and meaning effects.}
+\label{fig:overview}
+\end{figure}
+
+{\bf The picture that emerges is different from the gradient-masking hypothesis.} Refusal follows meaning far more than vocabulary. Across all 14 models, the correlation of refusal with a semantic harm rating (0.27--0.63) is 1.5--4$\times$ its correlation with trigger-word count (0.10--0.25), and no model looks like a keyword matcher. Removing trigger words does lower refusal by 16.3\pp on average (significant in 13 of 14 models), while a re-wording that keeps them lowers it by only 2.5\pp. But this is a leak, not a collapse: the rate of \harmbench-harmful completions rises by only 3.5\pp, because most new non-refusals answer a watered-down version of the request. Multilingual ``bypass'' in sub-3B models is mostly incoherence: 44--78\% of English-refused prompts are not refused in other languages, but only 6.6--14.8\% receive a reply that carries out the request. The large and exploitable gaps are \emph{framing} gaps. A one-paragraph fiction frame raises compliance from at most 11\% to 51--78\% in Qwen2.5-1.5B/3B/7B and Phi-3-mini, and a ``no-rules persona'' raises Llama-3.1-8B from 14\% to 93\% and Gemma-2-9B from 1.6\% to 86\%. These gaps are specific to the model family and do not shrink with scale.
+
+\para{Contributions.}
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item We propose a controlled lexical ablation that pairs each keyword-free rewrite with a keyword-kept control rewrite, which isolates the cost of losing trigger words (13.8\pp on average) from the cost of re-wording (2.5\pp).
+    \item We measure, per model, how much refusal follows keyword count \versus semantic harm on a decorrelated pool, and confirm the result with LLM-free outcome and harm measures and with contrasts that do not depend on a keyword lexicon.
+    \item We show that multilingual non-refusal in small models overstates harmful compliance several-fold, and that the gap between the two closes as models become more capable.
+    \item We map framing blind spots across a 0.5B--32.8B ladder and show that they are large, family-specific, and non-monotonic in size, so that robustness is a property of the alignment recipe and not of parameter count.
+\end{itemize}
+
+\Secref{sec:related} reviews related work. \Secref{sec:method} describes the models, data, labelling, and statistics. \Secref{sec:results} reports the four experiments, and \secref{sec:discussion} discusses implications and limitations.

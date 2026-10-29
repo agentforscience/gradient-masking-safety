@@ -1,0 +1,30 @@
+{
+  "created_at": "2026-10-27T16:03:12.752127Z",
+  "stages": {
+    "resource_finder": {
+      "status": "completed",
+      "completed_at": "2026-10-27T16:03:12.773469Z",
+      "success": true,
+      "outputs": {
+        "skipped": true
+      }
+    },
+    "experiment_runner": {
+      "status": "completed",
+      "started_at": "2026-10-27T16:03:12.785166Z",
+      "completed_at": "2026-10-27T20:58:36.771187Z",
+      "success": true,
+      "outputs": {
+        "success": true,
+        "return_code": 0,
+        "elapsed_time": 17723.894053459167,
+        "log_file": "/data/summereunann/neurico-workspaces/gradient_masking_safety_20261027_120000_ab12cd34/logs/execution_claude.log",
+        "transcript_file": "/data/summereunann/neurico-workspaces/gradient_masking_safety_20261027_120000_ab12cd34/logs/execution_claude_transcript.jsonl",
+        "background_processes_terminated": false
+      }
+    }
+  },
+  "current_stage": null,
+  "completed": true,
+  "completed_at": "2026-10-27T20:58:37.142184Z"
+}

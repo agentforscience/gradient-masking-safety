@@ -1,0 +1,28 @@
+\begin{table}[H]
+\centering
+\caption{Judge validation on all English responses. The refusal judge is compared with an LLM-free string-match refusal detector; the content judge is compared with the official \harmbench classifier. The content judge recovers 79--99\% of \harmbench-positive completions but also counts vague or non-harmful attempts, which is why we report the \harmbench rate as the stricter harmful-compliance measure.}
+\label{tab:judge}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lrccccc@{}}
+\toprule
+& & \multicolumn{2}{c}{Refusal judge \versus string match} & \multicolumn{3}{c}{Content judge \versus \textsc{HarmBench}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-7}
+Model & Params (B) & Agreement (\%) & Cohen $\kappa$ & Agreement (\%) & P(HB harmful $|$ judge complied) & P(judge complied $|$ HB harmful) \\
+\midrule
+Qwen2.5-0.5B & 0.5 & 91.7 & 0.83 & 85.8 & 63.0 & 80.2 \\
+Qwen3-0.6B & 0.6 & 83.9 & 0.36 & 77.2 & 65.7 & 86.5 \\
+Llama-3.2-1B & 1.2 & 86.0 & 0.66 & 95.1 & 38.9 & 98.6 \\
+Qwen2.5-1.5B & 1.5 & 94.8 & 0.86 & 94.0 & 70.7 & 83.3 \\
+Qwen2.5-3B & 3.1 & 92.8 & 0.84 & 92.1 & 65.2 & 88.8 \\
+Llama-3.2-3B & 3.2 & 94.3 & 0.86 & 92.6 & 46.4 & 93.2 \\
+Phi-3-mini & 3.8 & 95.4 & 0.89 & 94.5 & 71.4 & 92.5 \\
+Llama-2-7B-chat & 6.7 & 95.7 & 0.83 & 97.1 & 31.4 & 79.4 \\
+Mistral-7B & 7.2 & 83.3 & 0.45 & 80.4 & 75.3 & 86.5 \\
+Qwen2.5-7B & 7.6 & 89.9 & 0.79 & 88.4 & 58.1 & 83.0 \\
+Llama-3.1-8B & 8.0 & 96.7 & 0.93 & 93.0 & 75.7 & 95.8 \\
+Gemma-2-9B & 9.2 & 94.0 & 0.87 & 95.8 & 81.5 & 97.1 \\
+Qwen2.5-14B & 14.8 & 88.5 & 0.74 & 93.4 & 38.2 & 86.6 \\
+Qwen2.5-32B & 32.8 & 86.9 & 0.74 & 90.9 & 50.4 & 81.2 \\
+\bottomrule
+\end{tabular}}
+\end{table}

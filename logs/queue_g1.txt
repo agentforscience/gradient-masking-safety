@@ -1,0 +1,16 @@
+qwen2.5-0.5b:80
+qwen3-0.6b:80
+qwen2.5-0.5b
+qwen3-0.6b
+llama3.2-1b
+qwen2.5-1.5b
+qwen2.5-3b
+llama3.2-3b
+phi3-mini
+qwen2.5-7b
+llama3.1-8b
+mistral-7b
+gemma2-9b
+llama2-7b-chat
+qwen2.5-14b
+qwen2.5-32b
